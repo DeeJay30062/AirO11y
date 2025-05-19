@@ -1,0 +1,22 @@
+{
+  "folders": [
+    {
+      "path": "client"
+    },
+    {
+      "path": "server"
+    },
+    {
+      "path": "services/pricing-service"
+    }
+  ],
+  "settings": {
+    // These apply to the entire workspace
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.DS_Store": true
+    },
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true
+  }
+}

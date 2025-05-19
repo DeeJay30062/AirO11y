@@ -1,0 +1,23 @@
+# Node modules
+node_modules/
+dist/
+build/
+
+# Logs
+logs
+*.log
+
+# dotenv
+.env
+
+# OS files
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# VSCode
+.vscode/
+

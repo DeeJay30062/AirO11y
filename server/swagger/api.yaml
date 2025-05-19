@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: AirO11y API
+  version: 1.0.0
+paths:
+  /api/flights:
+    get:
+      summary: Get all flights
+      parameters:
+        - name: from
+          in: query
+          description: Departure airport code
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: Destination airport code
+          required: false
+          schema:
+            type: string
+        - name: date
+          in: query
+          description: Departure date (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: List of flights
+
+    post:
+      summary: Add a new flight
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flightNumber:
+                  type: string
+                from:
+                  type: string
+                to:
+                  type: string
+                departureTime:
+                  type: string
+                  format: date-time
+                arrivalTime:
+                  type: string
+                  format: date-time
+                price:
+                  type: number
+                availableSeats:
+                  type: integer
+              required:
+                - flightNumber
+                - from
+                - to
+                - departureTime
+                - arrivalTime
+                - price
+                - availableSeats
+      responses:
+        "201":
+          description: Flight created
+        "400":
+          description: Invalid input
+
+  /api/origins:
+    get:
+      summary: Get available origin cities
+    responses:
+      "200":
+        description: List of origin cities
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
