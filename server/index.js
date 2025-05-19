@@ -5,8 +5,16 @@ import YAML from 'yamljs';
 import swaggerUi from 'swagger-ui-express';
 import { connectMongo } from './config/db.js';
 import './config/redis.js'; // top-level await connects
+import cookieParser from 'cookie-parser';
+
 import flightsRouter from './routes/flights.js';
 import originRoutes from './routes/originRoutes.js'; // adjust path if needed
+import authRoutes from './routes/auth.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -14,11 +22,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const swaggerDocument = YAML.load('./swagger/api.yaml');
+app.use(cookieParser());
+
+const swaggerDocument = YAML.load(path.resolve(__dirname, './swagger/api.yaml'));
+
+//const swaggerDocument = YAML.load('./swagger/api.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/api/flights', flightsRouter);
 app.use('/api/origins', originRoutes);
+app.use('/api/auth', authRoutes);
 
 
 app.get('/', (req, res) => res.send('AirO11y API is live ✈️'));
