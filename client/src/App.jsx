@@ -7,12 +7,14 @@ import { themeSettings } from "./theme";
 import Layout from "./layouts/Layout";
 import routes from "./routes.jsx";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 import BookAFlight from "./pages/BookAFlight";
 import BookSearchFlights from "./pages/book/SearchFlights";
 import SelectFlight from "./pages/book/SelectFlight";
 import PassengerInfo from "./pages/book/PassengerInfo";
 import BookingConfirm from "./pages/book/BookingConfirm";
+import ProtectedRoute from "./components/ProtectedRoutes.jsx";
 
 function App() {
   // For now, manually toggle dark/light mode (can use context or Redux later)
@@ -21,7 +23,7 @@ function App() {
   // Memoize the theme object for performance
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
-  console.log("app rendering")
+  console.log("app rendering");
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -29,14 +31,21 @@ function App() {
       <Routes>
         {/* Public route: login */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Protected Layout-wrapped routes */}
-        <Route element={<Layout />}>
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           {routes.map((route) => (
             <Route
               key={route.path}
               path={route.path}
-              element={route.element}  // WAS {<route.element />}
+              element={route.element} // WAS {<route.element />}
             />
           ))}
           {/* Nested booking routes */}
