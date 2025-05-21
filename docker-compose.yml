@@ -1,25 +1,108 @@
-version: '3.8'
+
 
 services:
   mongo:
-    image: mongo
-    container_name: mongo
-    restart: unless-stopped
+    image: mongo:6
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - airo11y-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    image: redis:alpine
-    container_name: redis
-    restart: unless-stopped
+    image: redis:7
     ports:
       - "6379:6379"
+    networks:
+      - airo11y-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "5050:5050"
+    env_file:
+      - server/.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/airo11y
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - OTEL_ENABLED=true
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    networks:
+      - airo11y-net
     volumes:
-      - redis-data:/data
+      - ./server:/app
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_BACKEND_URL: http://localhost:5050
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env.docker
+    environment:
+      - VITE_BACKEND_URL=http://server:5050
+    depends_on:
+      - server
+    networks:
+      - airo11y-net
+
+
+  fake-pricing-service:
+    build:
+      context: ./services/pricing-service
+    ports:
+      - "8000:8000"
+    networks:
+      - airo11y-net
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - otel-collector
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    volumes:
+      - ./otel-config.yaml:/etc/otel/config.yaml
+    command: ["--config=/etc/otel/config.yaml"]
+    ports:
+      - "4317:4317"   # gRPC OTLP
+      - "55681:55681" # HTTP OTLP
+    networks:
+      - airo11y-net
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.43
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"
+      - "6831:6831/udp"
+    networks:
+      - airo11y-net
 
 volumes:
   mongo-data:
-  redis-data:
 
+networks:
+  airo11y-net:

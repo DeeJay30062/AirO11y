@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { TextField, Button, Typography, Box, Alert } from '@mui/material';
 import axios from 'axios';
+import api from "../api/axiosInstance";
 import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
@@ -17,7 +18,7 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const res = await axios.post('/api/auth/login', {
+      const res = await api.post('/api/auth/login', {
         username,
         password,
       });
