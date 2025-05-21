@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import api from "../api/axiosInstance";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -39,9 +40,9 @@ const RegisterPage = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+    console.log("This is what we are calling :", import.meta.env.VITE_BACKEND_URL);
     try {
-      const response = await axios.post("/api/auth/register", {
+      const response = await api.post("/api/auth/register", {
         username: formData.username,
         email: formData.email,
         password: formData.password,
