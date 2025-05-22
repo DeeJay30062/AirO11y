@@ -33,7 +33,7 @@ services:
     ports:
       - "5050:5050"
     env_file:
-      - server/.env
+      - .env
     depends_on:
       mongo:
         condition: service_healthy
@@ -49,20 +49,22 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     networks:
       - airo11y-net
-    volumes:
-      - ./server:/app
+#breaks the docker compose build node_modules were getting over written 
+#    volumes:
+#      - ./server:/app
 
   client:
     build:
       context: ./client
       args:
-        VITE_BACKEND_URL: http://localhost:5050
+        VITE_BACKEND_URL: ${VITE_BACKEND_URL}
     ports:
       - "3000:3000"
-    env_file:
-      - ./client/.env.docker
-    environment:
-      - VITE_BACKEND_URL=http://server:5050
+#combined server/.env and client/.env into single file to deal with docker compose knowing about environment variables at build time for VITE and at runtime
+# this challenge could have been overcome by scripting exporting needed envs before running docker compose build or up but this seemed like it need less explaination
+# this will also change greatly when we deploy NGINX
+env_file:
+      - .env
     depends_on:
       - server
     networks:
