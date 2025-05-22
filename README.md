@@ -13,6 +13,27 @@
 
 ---
 
+## 🔧 Environment Variables Setup
+
+This project uses environment variables for both the client and server. These are **not committed** to version control for security reasons.
+
+### 1. Copy the example files
+Run the following commands to create your own `.env` files:
+
+```
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+```
+
+### 2. Customize values
+Update the `.env` files with the appropriate values for your local or production environment.
+
+For example:
+- Replace `your-jwt-secret` with a secure random string
+- Set `VITE_BACKEND_URL` to your actual backend host (e.g. `http://192.168.1.178:5050` if testing on LAN)
+
+---
+
 ### 🚀 Running the Full Stack (Recommended)
 
 ```bash
@@ -50,18 +71,6 @@ npm run dev
 
 ---
 
-### 📦 Environment Variables
-
-Use a `.env` file or export these manually:
-
-```env
-MONGO_URI=mongodb://localhost:27017/airo11y
-REDIS_HOST=localhost
-OTEL_ENABLED=true
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
-```
-
----
 
 ### 📊 Observability Setup (WIP)
 
