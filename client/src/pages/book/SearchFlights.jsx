@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import api from "../../api/axiosInstance";
 
 const airports = ["ATL", "JFK", "LAX", "ORD", "DFW", "SEA", "DEN", "MIA"]; // You can expand this
 
@@ -33,7 +34,7 @@ const SearchFlights = () => {
   useEffect(() => {
     const fetchOrigins = async () => {
       try {
-        const response = await axios.get("/api/origins");
+        const response = await api.get("/api/origins");
         console.log('Origin response:', response.data);
         setOrigins(response.data);
         setLoadingOrigins(false);
@@ -51,7 +52,7 @@ const SearchFlights = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.get("/api/flights", {
+      const response = await api.get("/api/flights", {
         params: {
           from,
           to,

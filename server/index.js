@@ -25,6 +25,20 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Load Swagger YAML spec
+//const swaggerDocument = YAML.load(path.resolve(__dirname, './swagger/api.yaml'));
+
+//const swaggerDocument = YAML.load('./swagger/api.yaml');
+//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+//changed to work with NGINX
+// Load Swagger YAML spec
+const swaggerDocument = YAML.load(path.resolve(__dirname, './swagger/api.yaml'));
+
+//const swaggerDocument = YAML.load(path.resolve(__dirname, './swagger/api.yaml'));
+
+//const swaggerDocument = YAML.load('./swagger/api.yaml');
+//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+//changed to work with NGINX
+// Load Swagger YAML spec
 const swaggerDocument = YAML.load(path.resolve(__dirname, './swagger/api.yaml'));
 
 // Serve Swagger UI
