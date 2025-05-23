@@ -12,17 +12,26 @@
 - MongoDB & Redis (included in `docker-compose.yml`)
 
 ---
+## Clone GitHub Repository
+Run the following git command to clone the repository
+replace your-project-directory with where you would like to have the root of the project
+without arg will create AirO11y project directory
+
+```
+git clone https://github.com/DeeJay30062/AirO11y.git ./your-project-directory
+cd your-project-directory
+```
 
 ## 🔧 Environment Variables Setup
 
 This project uses environment variables for both the client and server. These are **not committed** to version control for security reasons.
+The .env have been combined into 1 file the .env.example is in the root directory for the project AirO11y by default.
 
 ### 1. Copy the example files
 Run the following commands to create your own `.env` files:
 
 ```
-cp server/.env.example server/.env
-cp client/.env.example client/.env
+cp .env.example .env
 ```
 
 ### 2. Customize values
