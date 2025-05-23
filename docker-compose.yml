@@ -1,5 +1,4 @@
 
-
 services:
   mongo:
     image: mongo:6
@@ -63,15 +62,27 @@ services:
 #combined server/.env and client/.env into single file to deal with docker compose knowing about environment variables at build time for VITE and at runtime
 # this challenge could have been overcome by scripting exporting needed envs before running docker compose build or up but this seemed like it need less explaination
 # this will also change greatly when we deploy NGINX
-env_file:
+    env_file:
       - .env
     depends_on:
       - server
     networks:
       - airo11y-net
 
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - client
+      - server
+      - pricing-service
+    networks:
+      - airo11y-net
 
-  fake-pricing-service:
+  pricing-service:
     build:
       context: ./services/pricing-service
     ports:
