@@ -24,10 +24,20 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+// Load Swagger YAML spec
 const swaggerDocument = YAML.load(path.resolve(__dirname, './swagger/api.yaml'));
 
-//const swaggerDocument = YAML.load('./swagger/api.yaml');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  swaggerOptions: {
+    url: '/api-docs/swagger.yaml'  // Tell the UI where to load the spec from
+  }
+}));
+
+// Serve the actual YAML file
+app.get('/api-docs/swagger.yaml', (req, res) => {
+  res.sendFile(path.resolve(__dirname, './swagger/api.yaml'));
+});
 
 app.use('/api/flights', flightsRouter);
 app.use('/api/origins', originRoutes);
