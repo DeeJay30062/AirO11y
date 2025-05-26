@@ -8,6 +8,9 @@
     },
     {
       "path": "services/pricing-service"
+    },
+    {
+      "path": "docs"
     }
   ],
   "settings": {
