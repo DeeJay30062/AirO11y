@@ -8,11 +8,34 @@ services:
       - mongo-data:/data/db
     networks:
       - airo11y-net
+    command: ["--replSet", "rs0"]
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  mongo-init:
+    image: mongo:6
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - airo11y-net
+    entrypoint: >
+      bash -c "
+        echo '📦 Waiting for MongoDB to be healthy...';
+        sleep 3;
+        mongosh --host mongo --eval '
+          const config = {
+            _id: \"rs0\",
+            members: [{ _id: 0, host: \"localhost:27017\" }]
+          };
+          try { rs.initiate(config) } catch (e) { print(e); }
+        ';
+        echo '✅ Replica set forced to use localhost:27017';
+      "
+    restart: "no"
 
   redis:
     image: redis:7
@@ -41,7 +64,7 @@ services:
       otel-collector:
         condition: service_started
     environment:
-      - MONGO_URI=mongodb://mongo:27017/airo11y
+      - MONGO_URI=mongodb://mongo:27017/airO11y
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - OTEL_ENABLED=true

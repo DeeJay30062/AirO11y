@@ -1,0 +1,23 @@
+{
+  "flightIds": [
+    "6833c13aba49ca1aa02be11b"
+  ],
+  "seatClass": "coach",
+  "passengers": [
+    {
+      "name": "Maria Gomez",
+      "dob": "1992-07-08",
+      "sex": "F",
+      "loyaltyId": "MGX-1103",
+      "tsaNumber": "TK112034"
+    },
+    {
+      "name": "David Lin",
+      "dob": "1984-03-12",
+      "sex": "M",
+      "loyaltyId": "DLX-2008",
+      "tsaNumber": "ZQ890123"
+    }
+  ]
+}
+

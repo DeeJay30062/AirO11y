@@ -1,0 +1,32 @@
+[
+  {
+    "seatsAvailable": { "first": 10, "economyPlus": 20, "coach": 110 },
+    "_id": "6832191b054a2eacc12d37c5",
+    "date": "2025-05-30T19:08:11.378Z",
+    "flightScheduleId": {
+      "_id": "6832191b054a2eacc12d37b9",
+      "flightNumber": "UA303",
+      "origin": "ATL",
+      "destination": "SEA",
+      "daysOfWeek": ["Su", "T", "F"],
+      "departureTime": "16:30",
+      "durationMinutes": 310,
+      "seatConfig": {
+        "first": 10,
+        "economyPlus": 20,
+        "coach": 110,
+        "_id": "6832191b054a2eacc12d37ba"
+      },
+      "__v": 0
+    },
+    "status": "scheduled",
+    "baseCost": 280,
+    "__v": 0,
+    "createdAt": "2025-05-24T19:08:11.393Z",
+    "updatedAt": "2025-05-24T19:08:11.393Z",
+    "pricing": {
+      "finalCost": 392,
+      "modifiers": { "class": 1, "demand": 1, "time": 1.4 }
+    }
+  }
+]
