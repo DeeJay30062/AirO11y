@@ -1,8 +1,8 @@
 // server/routes/auth.js
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
-import authMiddleware from '../middleware/authMiddleware.js';
+import express from "express";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -16,26 +16,48 @@ const generateToken = (user) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRES_IN || '15m',
+      expiresIn: process.env.JWT_EXPIRES_IN || "15m",
     }
   );
 };
 
 // REGISTER
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
-    const { username, email, password,status, homeAirport, tsaPrecheckNumber, phone, address, } = req.body;
+    const {
+      username,
+      email,
+      password,
+      fullName,
+      dateOfBirth,
+      loyaltyId,
+      status,
+      homeAirport,
+      tsaPrecheckNumber,
+      phone,
+      address,
+    } = req.body;
+
+    // Basic validation
+    if (!fullName?.first || !fullName?.last || !dateOfBirth) {
+      return res
+        .status(400)
+        .json({ error: "Missing required name or DOB fields" });
+    }
 
     // Check for duplicate user
     const existing = await User.findOne({ username });
     if (existing) {
-      return res.status(409).json({ error: 'Username already exists' });
+      return res.status(409).json({ error: "Username already exists" });
     }
 
     const user = new User({
       username,
       email,
       passwordHash: password, // Password will be hashed via pre-save hook
+      fullName,
+      dateOfBirth,
+      loyaltyId,
       status,
       homeAirport,
       tsaPrecheckNumber,
@@ -46,49 +68,58 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     const token = generateToken(user);
-    res.cookie('token', token, {
+    res.cookie("token", token, {
       httpOnly: true,
-      sameSite: 'Strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: "Lax",
+      //      secure: process.env.NODE_ENV === "production",
+      secure: false,
     });
 
-    res.status(201).json({ message: 'User created', user: { username, email } });
+    res
+      .status(201)
+      .json({ message: "User created", user: { username, email } });
   } catch (err) {
-    res.status(400).json({ error: 'Registration failed', details: err.message });
+    res
+      .status(400)
+      .json({ error: "Registration failed", details: err.message });
   }
 });
 
 // LOGIN
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
     const user = await User.findOne({ username });
     if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const token = generateToken(user);
-    res.cookie('token', token, {
+    res.cookie("token", token, {
       httpOnly: true,
-      sameSite: 'Strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: "Lax",
+      secure: false,
     });
 
-    res.json({ message: 'Login successful', user: { username, email: user.email } });
+    res.json({
+      message: "Login successful",
+      token,
+      user: { username },
+    });
   } catch (err) {
-    res.status(500).json({ error: 'Login failed', details: err.message });
+    res.status(500).json({ error: "Login failed", details: err.message });
   }
 });
 
 // LOGOUT
-router.post('/logout', (req, res) => {
-  res.clearCookie('token');
-  res.json({ message: 'Logged out successfully' });
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out successfully" });
 });
 
 // PROTECTED - GET CURRENT USER
-router.get('/me', authMiddleware, async (req, res) => {
+router.get("/me", authMiddleware, async (req, res) => {
   res.json({ user: req.user });
 });
 

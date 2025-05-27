@@ -7,7 +7,16 @@ import bcrypt from "bcrypt";
 const userSchema = new mongoose.Schema(
   {
     username: {
-      type: String, require: true, unique: true, trim: true
+      type: String,
+      require: true,
+      unique: true,
+      trim: true,
+    },
+    fullName: {
+      first: { type: String, required: true },
+      middle: { type: String },
+      last: { type: String, required: true },
+      suffix: { type: String },
     },
     email: {
       type: String,
@@ -19,11 +28,16 @@ const userSchema = new mongoose.Schema(
     passwordHash: {
       type: String,
       required: true,
-      
     },
-    // Optional fields
+    dateOfBirth: { type: Date, required: true },
 
-    status: { type: String, enum: ['Standard', 'Silver', 'Gold', 'Platinum'], default: 'Standard' },
+    // Optional fields
+    loyaltyId: { type: String },
+    status: {
+      type: String,
+      enum: ["Standard", "Silver", "Gold", "Platinum"],
+      default: "Standard",
+    },
     homeAirport: { type: String },
     tsaPrecheckNumber: { type: String },
     phone: { type: String },
