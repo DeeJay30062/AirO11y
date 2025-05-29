@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 const navItems = [
   { text: 'Dashboard', path: '/dashboard' },
-  { text: 'Search Flights', path: '/search' },
+  { text: 'Book Flights', path: '/book/search' },
   { text: 'Admin Flights', path: '/admin/flights' },
   { text: 'Observability', path: '/o11y' }
 ];
