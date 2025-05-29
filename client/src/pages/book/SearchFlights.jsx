@@ -33,22 +33,22 @@ const BookSearchFlights = () => {
   const [returnWarning, setReturnWarning] = useState("");
   const [searchError, setSearchError] = useState("");
 
+  useEffect(() => {
+    const saved = JSON.parse(sessionStorage.getItem("searchQuery"));
+    if (saved) {
+      setFrom(saved.from || "");
+      setTo(saved.to || "");
+      setDepartureDate(saved.departureDate || "");
+      setReturnDate(saved.returnDate || "");
+      setTripType(saved.tripType || "oneway");
+      setSeatClass(saved.seatClass || "coach");
+      setSeatCount(saved.seatCount || 1);
+    }
+  }, []);
 
   useEffect(() => {
-  const saved = JSON.parse(sessionStorage.getItem("searchQuery"));
-  if (saved) {
-    setFrom(saved.from || "");
-    setTo(saved.to || "");
-    setDepartureDate(saved.departureDate || "");
-    setReturnDate(saved.returnDate || "");
-    setTripType(saved.tripType || "oneway");
-    setSeatClass(saved.seatClass || "coach");
-    setSeatCount(saved.seatCount || 1);
-  }
-}, []);
-
-  useEffect(() => {
-    api.get("/api/origins")
+    api
+      .get("/api/origins")
       .then((res) => setAirports(res.data))
       .catch((err) => {
         console.error("Failed to fetch origins", err);
@@ -60,11 +60,19 @@ const BookSearchFlights = () => {
 
   useEffect(() => {
     if (from) {
-      api.get(`/api/destinations/${from}`)
+      api
+        .get(`/api/destinations/${from}`)
         .then((res) => setToOptions(res.data))
         .catch(() => setToOptions([]));
     }
   }, [from]);
+
+  useEffect(() => {
+  if (returnDate && departureDate && returnDate < departureDate) {
+    setReturnDate(""); // clear it to force user to pick again
+  }
+}, [departureDate]);
+  
 
   const checkFlightAvailability = async (origin, dest, date, setter) => {
     try {
@@ -110,7 +118,9 @@ const BookSearchFlights = () => {
       });
 
       if (response.data.length === 0) {
-        setDepartureWarning("No flights found. Please try a different route or date.");
+        setDepartureWarning(
+          "No flights found. Please try a different route or date."
+        );
         return;
       }
 
@@ -142,12 +152,18 @@ const BookSearchFlights = () => {
       </Typography>
 
       {searchError && (
-        <Alert severity="error" sx={{ mb: 2 }}>{searchError}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {searchError}
+        </Alert>
       )}
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>From</InputLabel>
-        <Select value={from} onChange={(e) => setFrom(e.target.value)} label="From">
+        <Select
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
+          label="From"
+        >
           {airports.map((code) => (
             <MenuItem key={code} value={code}>
               {code}
@@ -169,12 +185,23 @@ const BookSearchFlights = () => {
 
       <FormControl component="fieldset" sx={{ mb: 2 }}>
         <FormLabel component="legend">Trip Type</FormLabel>
-        <RadioGroup row value={tripType} onChange={(e) => setTripType(e.target.value)}>
-          <FormControlLabel value="oneway" control={<Radio />} label="One-Way" />
-          <FormControlLabel value="roundtrip" control={<Radio />} label="Round-Trip" />
+        <RadioGroup
+          row
+          value={tripType}
+          onChange={(e) => setTripType(e.target.value)}
+        >
+          <FormControlLabel
+            value="oneway"
+            control={<Radio />}
+            label="One-Way"
+          />
+          <FormControlLabel
+            value="roundtrip"
+            control={<Radio />}
+            label="Round-Trip"
+          />
         </RadioGroup>
       </FormControl>
-
       <TextField
         label="Departure Date"
         type="date"
@@ -183,9 +210,15 @@ const BookSearchFlights = () => {
         onChange={(e) => setDepartureDate(e.target.value)}
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 2 }}
+        inputProps={{
+          min: new Date().toISOString().split("T")[0], // disables past dates
+        }}
       />
+
       {departureWarning && (
-        <Alert severity="warning" sx={{ mb: 2 }}>{departureWarning}</Alert>
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {departureWarning}
+        </Alert>
       )}
 
       {tripType === "roundtrip" && (
@@ -198,16 +231,25 @@ const BookSearchFlights = () => {
             onChange={(e) => setReturnDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
             sx={{ mb: 2 }}
+            inputProps={{
+              min: departureDate || new Date().toISOString().split("T")[0], // disables return before departure
+            }}
           />
           {returnWarning && (
-            <Alert severity="warning" sx={{ mb: 2 }}>{returnWarning}</Alert>
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {returnWarning}
+            </Alert>
           )}
         </>
       )}
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>Seat Class</InputLabel>
-        <Select value={seatClass} onChange={(e) => setSeatClass(e.target.value)} label="Seat Class">
+        <Select
+          value={seatClass}
+          onChange={(e) => setSeatClass(e.target.value)}
+          label="Seat Class"
+        >
           <MenuItem value="coach">Coach</MenuItem>
           <MenuItem value="economyPlus">Economy Plus</MenuItem>
           <MenuItem value="first">First</MenuItem>
@@ -216,7 +258,11 @@ const BookSearchFlights = () => {
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>Number of Seats</InputLabel>
-        <Select value={seatCount} onChange={(e) => setSeatCount(parseInt(e.target.value))} label="Number of Seats">
+        <Select
+          value={seatCount}
+          onChange={(e) => setSeatCount(parseInt(e.target.value))}
+          label="Number of Seats"
+        >
           {[...Array(9)].map((_, i) => (
             <MenuItem key={i + 1} value={i + 1}>
               {i + 1}

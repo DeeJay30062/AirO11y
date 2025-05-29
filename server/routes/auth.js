@@ -56,7 +56,7 @@ router.post("/register", async (req, res) => {
       email,
       passwordHash: password, // Password will be hashed via pre-save hook
       fullName,
-      dateOfBirth,
+      dateOfBirth: new Date(dateOfBirth),
       loyaltyId,
       status,
       homeAirport,
@@ -82,6 +82,7 @@ router.post("/register", async (req, res) => {
     res
       .status(400)
       .json({ error: "Registration failed", details: err.message });
+      console.error("Registration Failed", err);
   }
 });
 

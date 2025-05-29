@@ -29,11 +29,11 @@ services:
         mongosh --host mongo --eval '
           const config = {
             _id: \"rs0\",
-            members: [{ _id: 0, host: \"localhost:27017\" }]
+            members: [{ _id: 0, host: \"mongo:27017\" }]
           };
           try { rs.initiate(config) } catch (e) { print(e); }
         ';
-        echo '✅ Replica set forced to use localhost:27017';
+        echo '✅ Replica set forced to use mongo:27017';
       "
     restart: "no"
 

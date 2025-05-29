@@ -36,8 +36,8 @@ const defaultDevOrigins = [
 const labOrigin = process.env.CLIENT_ORIGIN;
 
 // Build full allowed origin list
-//const allowedOrigins = [...defaultDevOrigins, labOrigin].filter(Boolean);
-const allowedOrigins = ["http://localhost:3000", "http://10.103.1.251:3000"];
+const allowedOrigins = [...defaultDevOrigins, labOrigin].filter(Boolean);
+//const allowedOrigins = ["http://localhost:3000", "http://10.103.1.251:3000"];
 //app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(
   cors({

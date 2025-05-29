@@ -21,6 +21,9 @@ const PassengerInfo = () => {
   const [isTraveling, setIsTraveling] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
 
+  // New: validation error tracking per passenger
+  const [validationErrors, setValidationErrors] = useState([]);
+
   useEffect(() => {
     const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
     if (!searchQuery || !searchQuery.seatCount) {
@@ -47,8 +50,6 @@ const PassengerInfo = () => {
         if (!token) return;
         const res = await api.get("/api/user/profile");
 
-      
-
         const { fullName, dateOfBirth, loyaltyId, tsaPrecheckNumber } =
           res.data;
 
@@ -71,10 +72,22 @@ const PassengerInfo = () => {
     fetchProfile();
   }, []);
 
+  // Clear error for field when user types
+  const clearError = (index, field) => {
+    setValidationErrors((prev) => {
+      const copy = [...prev];
+      if (!copy[index]) copy[index] = {};
+      copy[index][field] = false;
+      return copy;
+    });
+  };
+
   const handleChange = (index, field, value) => {
     const updated = [...passengers];
     updated[index][field] = value;
     setPassengers(updated);
+
+    clearError(index, field);
   };
 
   const handleTravelingCheck = (checked) => {
@@ -86,28 +99,41 @@ const PassengerInfo = () => {
     }
   };
 
-  const handleSubmit = () => {
-    const hasEmptyFields = passengers.some(
-      (p) => !p.name || !p.dob || !p.sex || !p.loyaltyId
-    );
+  // Validate required fields per passenger, track errors
+  const validate = () => {
+    const errors = passengers.map((p) => ({
+      name: !p.name.trim(),
+      dob: !p.dob,
+      sex: !p.sex,
+      //loyaltyId: !p.loyaltyId.trim(),
+    }));
 
-    if (hasEmptyFields) {
+    setValidationErrors(errors);
+
+    // Return true if no errors
+    return !errors.some((e) => Object.values(e).some(Boolean));
+  };
+
+  const handleSubmit = () => {
+    if (!validate()) {
       setError("Please complete all required fields for all passengers.");
       return;
     }
 
-    sessionStorage.setItem("passengerInfo", JSON.stringify(passengers));
+    setError("");
+    sessionStorage.setItem("passengers", JSON.stringify(passengers));
     sessionStorage.setItem("isTraveling", JSON.stringify(isTraveling));
     navigate("/book/confirm");
   };
 
-  if (error) {
+  if (error && !passengers.length) {
+    // Critical error, show alert and back button
     return (
       <Container>
         <Alert severity="error" sx={{ mt: 4 }}>
           {error}
         </Alert>
-        <Button sx={{ mt: 2 }} onClick={() => navigate("/book/search")}>
+        <Button sx={{ mt: 2 }} onClick={() => navigate("/book/confirm")}>
           Back to Search
         </Button>
       </Container>
@@ -119,6 +145,12 @@ const PassengerInfo = () => {
       <Typography variant="h5" gutterBottom>
         Passenger Information
       </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {passengers.map((passenger, index) => (
         <Box key={index} sx={{ mb: 3, borderBottom: "1px solid #ccc", pb: 2 }}>
@@ -143,6 +175,9 @@ const PassengerInfo = () => {
                 required
                 value={passenger.name}
                 onChange={(e) => handleChange(index, "name", e.target.value)}
+                error={!!validationErrors[index]?.name}
+                helperText={validationErrors[index]?.name && "Full name is required"}
+                disabled={isTraveling && index === 0}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -154,6 +189,9 @@ const PassengerInfo = () => {
                 InputLabelProps={{ shrink: true }}
                 value={passenger.dob}
                 onChange={(e) => handleChange(index, "dob", e.target.value)}
+                error={!!validationErrors[index]?.dob}
+                helperText={validationErrors[index]?.dob && "Date of birth is required"}
+                disabled={isTraveling && index === 0}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -164,6 +202,9 @@ const PassengerInfo = () => {
                 required
                 value={passenger.sex}
                 onChange={(e) => handleChange(index, "sex", e.target.value)}
+                error={!!validationErrors[index]?.sex}
+                helperText={validationErrors[index]?.sex && "Sex is required"}
+                //disabled={isTraveling && index === 0}
               >
                 <MenuItem value="M">Male</MenuItem>
                 <MenuItem value="F">Female</MenuItem>
@@ -173,11 +214,12 @@ const PassengerInfo = () => {
               <TextField
                 label="Loyalty ID"
                 fullWidth
-                required
+                //required
                 value={passenger.loyaltyId}
-                onChange={(e) =>
-                  handleChange(index, "loyaltyId", e.target.value)
-                }
+                onChange={(e) => handleChange(index, "loyaltyId", e.target.value)}
+                //error={!!validationErrors[index]?.loyaltyId}
+                //helperText={validationErrors[index]?.loyaltyId && "Loyalty ID is required"}
+                disabled={isTraveling && index === 0}
               />
             </Grid>
             <Grid item xs={12}>
@@ -185,9 +227,8 @@ const PassengerInfo = () => {
                 label="TSA Number (optional)"
                 fullWidth
                 value={passenger.tsaNumber}
-                onChange={(e) =>
-                  handleChange(index, "tsaNumber", e.target.value)
-                }
+                onChange={(e) => handleChange(index, "tsaNumber", e.target.value)}
+                disabled={isTraveling && index === 0}
               />
             </Grid>
           </Grid>
