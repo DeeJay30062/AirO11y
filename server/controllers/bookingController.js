@@ -120,7 +120,8 @@ console.log("Looking for [%s]", userName);
   //Find user by username
   const user = await User.findOne({username: userName});
   if (!user){
-    console.log("User not found", err)
+    console.log("await User.findOne({username: %s}); didn't work", userName);
+    console.log("User not found");
     return res.status(404).json({ error: 'User not found'});
   }
 

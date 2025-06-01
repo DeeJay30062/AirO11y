@@ -18,34 +18,22 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosInstance";
 
-import { useBooking } from "../../context/BookingContext.jsx";
-
 const BookSearchFlights = () => {
-  const { data, setData } = useBooking();
-
   const navigate = useNavigate();
   const [airports, setAirports] = useState([]);
-  const [from, setFrom] = useState(data.searchQuery?.from || "");
-  const [to, setTo] = useState(data.searchQuery?.to || "");
-  const [departureDate, setDepartureDate] = useState(
-    data.searchQuery?.departureDate || ""
-  );
-  const [returnDate, setReturnDate] = useState(
-    data.searchQuery?.returnDate || ""
-  );
-  const [seatClass, setSeatClass] = useState(
-    data.searchQuery?.seatClass || "coach"
-  );
-  const [tripType, setTripType] = useState(
-    data.searchQuery?.tripType || "oneway"
-  );
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [departureDate, setDepartureDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
+  const [seatClass, setSeatClass] = useState("coach");
+  const [tripType, setTripType] = useState("oneway");
   const [seatCount, setSeatCount] = useState(1);
 
   const [departureWarning, setDepartureWarning] = useState("");
   const [returnWarning, setReturnWarning] = useState("");
   const [searchError, setSearchError] = useState("");
 
-  /* useEffect(() => {
+ /* useEffect(() => {
     const saved = JSON.parse(sessionStorage.getItem("searchQuery"));
     if (saved) {
       setFrom(saved.from || "");
@@ -56,8 +44,8 @@ const BookSearchFlights = () => {
       setSeatClass(saved.seatClass || "coach");
       setSeatCount(saved.seatCount || 1);
     }
-  }, []); */
-
+  }, []);
+*/
   useEffect(() => {
     api
       .get("/api/origins")
@@ -80,10 +68,11 @@ const BookSearchFlights = () => {
   }, [from]);
 
   useEffect(() => {
-    if (returnDate && departureDate && returnDate < departureDate) {
-      setReturnDate(""); // clear it to force user to pick again
-    }
-  }, [departureDate]);
+  if (returnDate && departureDate && returnDate < departureDate) {
+    setReturnDate(""); // clear it to force user to pick again
+  }
+}, [departureDate]);
+  
 
   const checkFlightAvailability = async (origin, dest, date, setter) => {
     try {
@@ -134,7 +123,6 @@ const BookSearchFlights = () => {
         );
         return;
       }
-
       setData({
         ...data,
         searchQuery: {
@@ -147,8 +135,8 @@ const BookSearchFlights = () => {
           tripType,
         },
       });
-
-      /*sessionStorage.setItem(
+/*
+      sessionStorage.setItem(
         "searchQuery",
         JSON.stringify({
           from,
@@ -160,9 +148,9 @@ const BookSearchFlights = () => {
           tripType,
         })
       );
-*/
 
-      //sessionStorage.setItem("searchResults", JSON.stringify(response.data));
+      sessionStorage.setItem("searchResults", JSON.stringify(response.data)); */
+
       navigate("/book/select");
     } catch (err) {
       console.error("Search error", err);

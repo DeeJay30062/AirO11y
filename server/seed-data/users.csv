@@ -1,0 +1,3 @@
+username,email,password,firstName,middleName,lastName,suffix,dateOfBirth,loyaltyId,status,homeAirport,tsaPrecheckNumber,phone,street,city,state,zip,country
+timmy123,timmy@example.com,Password123!,Timothy,,Turtleson,Jr.,1985-06-15,LOYAL-TIMMY-001,Gold,JFK,9876543210,555-123-4567,123 Shell Blvd,Snailsville,NY,12345,USA
+janey_doe,janey.d@example.net,SecurePass!1,Jane,Elizabeth,Doe,,1990-01-02,LOYAL-JANE-999,Silver,LAX,1234567890,555-987-6543,456 Quiet St,Boringtown,CA,90210,USA

@@ -14,7 +14,10 @@ import BookSearchFlights from "./pages/book/SearchFlights";
 import SelectFlight from "./pages/book/SelectFlight";
 import PassengerInfo from "./pages/book/PassengerInfo";
 import BookingConfirm from "./pages/book/BookingConfirm";
+import BookingPayment from "./pages/book/PaymentPage";
 import ProtectedRoute from "./components/ProtectedRoutes.jsx";
+
+import { BookingProvider } from "./context/BookingContext.jsx";
 
 function App() {
   // For now, manually toggle dark/light mode (can use context or Redux later)
@@ -25,6 +28,7 @@ function App() {
 
   console.log("app rendering");
   return (
+    <BookingProvider>
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
@@ -54,13 +58,16 @@ function App() {
             <Route path="select" element={<SelectFlight />} />
             <Route path="passenger" element={<PassengerInfo />} />
             <Route path="confirm" element={<BookingConfirm />} />
+            <Route path="payment" element={<BookingPayment/>}/>
           </Route>
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
     </ThemeProvider>
-  );
+     
+    </BookingProvider>
+   );
 }
 
 export default App;

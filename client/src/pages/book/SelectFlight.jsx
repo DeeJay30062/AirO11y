@@ -10,10 +10,14 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosInstance";
+import { useBooking } from "../../context/BookingContext.jsx";
 
 const SelectFlight = () => {
+  const { data, setData } = useBooking();
+
   const navigate = useNavigate();
-  const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
+  //const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
+  const searchQuery = data.searchQuery;
   const [departFlights, setDepartFlights] = useState([]);
   const [returnFlights, setReturnFlights] = useState([]);
   const [selectedDepartFlight, setSelectedDepartFlight] = useState(null);
@@ -53,16 +57,26 @@ const SelectFlight = () => {
   }, []);
 
   useEffect(() => {
-    const isRoundTrip = searchQuery.tripType === 'roundtrip';
+    const isRoundTrip = searchQuery.tripType === "roundtrip";
     const hasDepart = !!selectedDepartFlight;
     const hasReturn = !!selectedReturnFlight;
 
-    if ((isRoundTrip && hasDepart && hasReturn) || (!isRoundTrip && hasDepart)) {
+    if (
+      (isRoundTrip && hasDepart && hasReturn) ||
+      (!isRoundTrip && hasDepart)
+    ) {
       // Save and auto-navigate
-      sessionStorage.setItem("selectedFlights", JSON.stringify({
+      /* sessionStorage.setItem("selectedFlights", JSON.stringify({
         depart: selectedDepartFlight,
         return: selectedReturnFlight,
-      }));
+      }));*/
+      setData({
+        ...data,
+        selectedFlights: {
+          depart: selectedDepartFlight,
+          return: selectedReturnFlight,
+        },
+      });
       navigate("/book/passenger");
     }
   }, [selectedDepartFlight, selectedReturnFlight]);
@@ -80,7 +94,8 @@ const SelectFlight = () => {
         <CardContent>
           <Typography variant="h6">
             {flight.flightScheduleId.flightNumber} —{" "}
-            {flight.flightScheduleId.origin} to {flight.flightScheduleId.destination}
+            {flight.flightScheduleId.origin} to{" "}
+            {flight.flightScheduleId.destination}
           </Typography>
           <Typography>
             Departure: {flight.flightScheduleId.departureTime}, Duration:{" "}
@@ -105,7 +120,11 @@ const SelectFlight = () => {
       </Typography>
       <Grid container spacing={2}>
         {departFlights.map((flight) =>
-          renderFlightCard(flight, selectedDepartFlight?._id, setSelectedDepartFlight)
+          renderFlightCard(
+            flight,
+            selectedDepartFlight?._id,
+            setSelectedDepartFlight
+          )
         )}
       </Grid>
 
@@ -116,7 +135,11 @@ const SelectFlight = () => {
           </Typography>
           <Grid container spacing={2}>
             {returnFlights.map((flight) =>
-              renderFlightCard(flight, selectedReturnFlight?._id, setSelectedReturnFlight)
+              renderFlightCard(
+                flight,
+                selectedReturnFlight?._id,
+                setSelectedReturnFlight
+              )
             )}
           </Grid>
         </>
