@@ -13,19 +13,35 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosInstance";
+import { useBooking } from "../../context/BookingContext";
 
 const PassengerInfo = () => {
+  const { data, setData } = useBooking();
   const navigate = useNavigate();
-  const [passengers, setPassengers] = useState([]);
-  const [error, setError] = useState("");
-  const [isTraveling, setIsTraveling] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
 
-  // New: validation error tracking per passenger
+  const [passengers, setPassengers] = useState(() => {
+    return data.passengers?.length
+      ? data.passengers
+      : Array.from({ length: data.searchQuery?.seatCount || 1 }, () => ({
+          name: "",
+          dob: "",
+          sex: "",
+          loyaltyId: "",
+          tsaNumber: "",
+        }));
+  });
+
+  const [isTraveling, setIsTraveling] = useState(data.searchQuery?.isTraveling || false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [error, setError] = useState("");
   const [validationErrors, setValidationErrors] = useState([]);
+  //---------------------------
+  //WAS const [passengers, setPassengers] = useState([]);
 
   useEffect(() => {
-    const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
+   // const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
+   const searchQuery = data.searchQuery;
+
     if (!searchQuery || !searchQuery.seatCount) {
       setError("Missing booking context. Please restart your booking.");
       return;
@@ -46,6 +62,7 @@ const PassengerInfo = () => {
 
     const fetchProfile = async () => {
       try {
+        //need to update to be in HttpOnly Cookie
         const token = JSON.parse(localStorage.getItem("user"))?.token;
         if (!token) return;
         const res = await api.get("/api/user/profile");
@@ -121,8 +138,18 @@ const PassengerInfo = () => {
     }
 
     setError("");
-    sessionStorage.setItem("passengers", JSON.stringify(passengers));
-    sessionStorage.setItem("isTraveling", JSON.stringify(isTraveling));
+    setData({
+  ...data,
+  passengers,
+  searchQuery: {
+    ...data.searchQuery,
+    isTraveling,
+  },
+});
+
+    //WAS 
+    //sessionStorage.setItem("passengers", JSON.stringify(passengers));
+    //sessionStorage.setItem("isTraveling", JSON.stringify(isTraveling));
     navigate("/book/confirm");
   };
 

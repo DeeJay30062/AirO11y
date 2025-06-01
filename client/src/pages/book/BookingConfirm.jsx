@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosInstance.js"; // your axios setup
+import {useBooking} from "../../context/BookingContext.jsx";
+
 
 async function submitBookingGroup({
   departFlightId,
@@ -17,18 +19,21 @@ async function submitBookingGroup({
   return response.data;
 }
 const BookingConfirm = () => {
+  const {data, setData} = useBooking();
   const navigate = useNavigate();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
-    const selectedFlights = JSON.parse(sessionStorage.getItem("selectedFlights"));
-    //  const departFlight = JSON.parse(sessionStorage.getItem("selectedDepartFlight"));
-    //  const returnFlight = JSON.parse(sessionStorage.getItem("selectedReturnFlight"));
-    const passengers = JSON.parse(sessionStorage.getItem("passengers"));
-    const isTravelling = JSON.parse(sessionStorage.getItem("isTravelling"));
+
+    const searchQuery = data.searchQuery;
+  //  const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
+//    const selectedFlights = JSON.parse(sessionStorage.getItem("selectedFlights"));
+  //  const passengers = JSON.parse(sessionStorage.getItem("passengers"));
+    const selectedFlights = data.selectedFlights;
+    const passengers = data.passengers;
+    const isTravelling = data.searchQuery.isTravelling;
 
     if (!searchQuery || !selectedFlights || !passengers) {
       console.warn("Missing booking data");
@@ -60,8 +65,8 @@ const BookingConfirm = () => {
         seatClass: searchQuery.seatClass,
       });
       console.log("Booking successful!", result);
-      // Navigate to final confirmation page or show a success message
-      navigate("/book/confirm/final", { state: { bookingGroup: result } });
+      // Navigate to payment page or show a success message
+      navigate("/book/payment", { state: { bookingGroup: result } });
     } catch (err) {
       setError("Booking failed. Please try again.");
       console.error(err);
