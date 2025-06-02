@@ -17,6 +17,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import logger from "./lib/logger.js"; // Winston Logger
+import fs from "fs";
+import https from "https";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -115,6 +118,7 @@ app.get("/", (req, res) => {
   res.send("AirO11y API is live ✈️");
 });
 
+/*
 const PORT = process.env.PORT || 5050;
 // Start server
 app.listen(PORT, "0.0.0.0", async () => {
@@ -122,9 +126,22 @@ app.listen(PORT, "0.0.0.0", async () => {
   logger.info(`✅ Server running on port ${PORT}`);
   logger.info(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
 });
+*/
+
+const PORT = process.env.PORT || 5050;
+(async () => {
+  await connectMongo();
+
+    app.listen(PORT, "0.0.0.0", () => {
+      logger.info(`✅ HTTP server running on port ${PORT}`);
+    });
+
+  logger.info(`🌍 Environment: ${process.env.NODE_ENV}`);
+})();
 
 // Global error handling for unhandled rejections
 process.on("unhandledRejection", (err) => {
   logger.error(`💥 Unhandled Rejection: ${err.message}`);
   process.exit(1);
 });
+

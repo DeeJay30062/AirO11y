@@ -77,7 +77,7 @@ export const searchFlights = async (req, res) => {
         let modifiers = {};
 
         try {
-          const response = await axios.post("http://localhost:8000/price", {
+          const response = await axios.post("http://192.168.1.180:8000/price", {
             baseCost,
             seatClass,
             daysUntilFlight,

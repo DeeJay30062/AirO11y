@@ -70,9 +70,10 @@ router.post("/register", async (req, res) => {
     const token = generateToken(user);
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "Lax",
-      //      secure: process.env.NODE_ENV === "production",
-      secure: false,
+      sameSite: "Strict",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 15*60*1000,
+      //secure: false,
     });
 
     res
@@ -97,10 +98,12 @@ router.post("/login", async (req, res) => {
     }
 
     const token = generateToken(user);
-    res.cookie("token", token, {
+res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "Lax",
-      secure: false,
+      sameSite: "Strict",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 15*60*1000,
+      //secure: false,
     });
 
     res.json({

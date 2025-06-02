@@ -1,0 +1,15 @@
+# Use a lightweight Node base image
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy only what's needed
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Command to run your script
+CMD ["node", "scripts/myTest.js"]
+

@@ -6,7 +6,7 @@ import DailyFlight from '../models/DailyFlight.js';
 console.log("Good Morning and welcome to myTest");
 
 dotenv.config();
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/airO11y';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/airO11y?replicaSet=rs0';
 console.log('process.env.MONGO_URI', process.env.MONGO_URI);
 console.log('MONGO_URI ',MONGO_URI)
 await mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });

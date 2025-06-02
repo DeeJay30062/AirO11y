@@ -59,8 +59,9 @@ export const createBookingGroup = async (req, res) => {
           const daysUntilFlight = Math.ceil((new Date(flight.date) - today) / (1000 * 60 * 60 * 24));
           let finalCost = flight.baseCost;
 
-          try {
-            const response = await axios.post(process.env.PRICING_URL || 'http://localhost:8000/price', {
+          console.log("process.env.PRICING_URL [%s]", process.env.PRICING_URL);
+		try {
+            const response = await axios.post(process.env.PRICING_URL || 'http://192.168.1.180:8000/price', {
               baseCost: flight.baseCost,
               seatClass,
               daysUntilFlight,
