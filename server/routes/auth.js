@@ -72,7 +72,7 @@ router.post("/register", async (req, res) => {
       httpOnly: true,
       sameSite: "Strict",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 15*60*1000,
+      maxAge: 15 * 60 * 1000,
       //secure: false,
     });
 
@@ -83,7 +83,7 @@ router.post("/register", async (req, res) => {
     res
       .status(400)
       .json({ error: "Registration failed", details: err.message });
-      console.error("Registration Failed", err);
+    console.error("Registration Failed", err);
   }
 });
 
@@ -98,11 +98,11 @@ router.post("/login", async (req, res) => {
     }
 
     const token = generateToken(user);
-res.cookie("token", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       sameSite: "Strict",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 15*60*1000,
+      maxAge: 15 * 60 * 1000,
       //secure: false,
     });
 

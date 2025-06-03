@@ -3,8 +3,8 @@
 mkdir -p ./certs
 
 openssl req -x509 -newkey rsa:2048 -nodes \
-  -keyout ./certs/self.key \
-  -out ./certs/self.crt \
+  -keyout ./certs/airO11y.key \
+  -out ./certs/airO11y.crt \
   -days 365 \
   -subj "/CN=localhost"
 

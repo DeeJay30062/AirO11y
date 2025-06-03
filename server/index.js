@@ -17,6 +17,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import logger from "./lib/logger.js"; // Winston Logger
+import requestLogger from "./middleware/requestLogger.js";
 import fs from "fs";
 import https from "https";
 
@@ -74,11 +75,7 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-// Optional: Log every request (can comment this out if too noisy)
-app.use((req, res, next) => {
-  logger.info(`[${req.method}] ${req.originalUrl}`);
-  next();
-});
+app.use(requestLogger);
 
 //changed to work with NGINX
 // Load Swagger YAML spec
