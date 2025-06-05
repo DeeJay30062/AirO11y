@@ -65,10 +65,9 @@ console.log("in useEffect [data.searchQuery]");
     const fetchProfile = async () => {
       try {
         //need to update to be in HttpOnly Cookie
-//        const token = JSON.parse(localStorage.getItem("user"))?.token;
-//        if (!token) return;
-        console.log("Trying to get the profile");
-	      const res = await api.get("/api/user/profile");
+        //const token = JSON.parse(localStorage.getItem("user"))?.token;
+        //if (!token) return;
+        const res = await api.get("/api/user/profile");
 
         const { fullName, dateOfBirth, loyaltyId, tsaPrecheckNumber } =
           res.data;
@@ -111,12 +110,11 @@ console.log("in useEffect [data.searchQuery]");
   };
 
   const handleTravelingCheck = (checked) => {
-   setIsTraveling(checked);
+    setIsTraveling(checked);
     if (checked && userProfile) {
       const updated = [...passengers];
       updated[0] = { ...userProfile };
       setPassengers(updated);
-	   
     }
   };
 

@@ -1,5 +1,4 @@
 // client/src/pages/LoginPage.jsx
-// client/src/pages/LoginPage.jsx
 
 import { useState } from "react";
 import { TextField, Button, Typography, Box, Alert } from "@mui/material";
@@ -31,7 +30,6 @@ const LoginPage = () => {
         "user",
         JSON.stringify({
           username: res.data.user.username,
-//          token: res.data.token,
         })
       );
 
