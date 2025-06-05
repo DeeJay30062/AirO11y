@@ -6,7 +6,7 @@
 
 ### 🛠️ Prerequisites
 
-- Docker + Docker Compose
+- Docker + Docker Compose 
 - Node.js (for local development if running outside Docker)
 - Python 3 (for the fake pricing microservice)
 - MongoDB & Redis (included in `docker-compose.yml`)

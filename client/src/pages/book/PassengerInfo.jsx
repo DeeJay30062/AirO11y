@@ -16,6 +16,8 @@ import api from "../../api/axiosInstance";
 import { useBooking } from "../../context/BookingContext";
 
 const PassengerInfo = () => {
+	console.log("Entering PassengerInfo");
+
   const { data, setData } = useBooking();
   const navigate = useNavigate();
 
@@ -41,7 +43,7 @@ const PassengerInfo = () => {
   useEffect(() => {
    // const searchQuery = JSON.parse(sessionStorage.getItem("searchQuery"));
    const searchQuery = data.searchQuery;
-
+console.log("in useEffect [data.searchQuery]");
     if (!searchQuery || !searchQuery.seatCount) {
       setError("Missing booking context. Please restart your booking.");
       return;
@@ -63,8 +65,8 @@ const PassengerInfo = () => {
     const fetchProfile = async () => {
       try {
         //need to update to be in HttpOnly Cookie
-        const token = JSON.parse(localStorage.getItem("user"))?.token;
-        if (!token) return;
+        //const token = JSON.parse(localStorage.getItem("user"))?.token;
+        //if (!token) return;
         const res = await api.get("/api/user/profile");
 
         const { fullName, dateOfBirth, loyaltyId, tsaPrecheckNumber } =
@@ -87,7 +89,7 @@ const PassengerInfo = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, [data.searchQuery]);
 
   // Clear error for field when user types
   const clearError = (index, field) => {
@@ -190,7 +192,7 @@ const PassengerInfo = () => {
                   onChange={(e) => handleTravelingCheck(e.target.checked)}
                 />
               }
-              label="I am traveling"
+              label="I am traveling!"
               sx={{ mt: 1, mb: 1 }}
             />
           )}
