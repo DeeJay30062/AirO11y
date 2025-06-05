@@ -31,7 +31,7 @@ const LoginPage = () => {
         "user",
         JSON.stringify({
           username: res.data.user.username,
-          token: res.data.token,
+//          token: res.data.token,
         })
       );
 
