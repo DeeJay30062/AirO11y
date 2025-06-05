@@ -189,11 +189,11 @@ export const getBookingGroups = async (req, res) => {
           };
         })
         .filter((group) => group.bookings.length > 0); // Remove groups with no matching bookings
+      logger.info("Filtered booking groups by date", {
+        filterDate,
+        count: bookingGroups.length,
+      });
     }
-    logger.info("Filtered booking groups by date", {
-      filterDate,
-      count: bookingGroups.length,
-    });
 
     // Format response (optional - here just return as is)
     return res.status(200).json({ bookingGroups });
