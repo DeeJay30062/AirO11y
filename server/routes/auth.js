@@ -3,8 +3,53 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+//---------------------------------------------------
+import redisClient from "../config/redis.js";
+import { v4 as uuidv4 } from "uuid";
+
 
 const router = express.Router();
+
+router.post('/request-password-reset', async (req, res) => {
+  const { email } = req.body;
+  
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const token = uuidv4();
+    const redisKey = `reset:${token}`;
+
+    // Store token in Redis for 15 minutes
+    await redisClient.set(redisKey, user._id.toString(), { EX: 900 });
+
+    // Normally, you would send this via email
+    const baseResetUrl = process.env.CLIENT_ORIGIN;
+    const resetUrl = `${baseResetUrl}/reset-password/${token}`;
+    console.log(`[Reset Link] ${resetUrl}`);
+
+    res.json({ message: 'Password reset link sent (check logs)' });
+  } catch (err) {
+    console.error('Error in /request-password-reset:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get("/test-redis", async (req, res) => {
+  const token = uuidv4();
+  await redisClient.set(`reset:${token}`, "dummy-user-id", {
+    EX: 60 * 15, // expires in 15 minutes
+  });
+
+  const value = await redisClient.get(`reset:${token}`);
+
+  res.json({ token, value });
+});
+
+//-----------------------------------------
 
 // Centralized token generator
 const generateToken = (user) => {
@@ -70,10 +115,10 @@ router.post("/register", async (req, res) => {
     const token = generateToken(user);
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "Strict",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      // secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
-      //secure: false,
+      secure: false,
     });
 
     res
@@ -96,12 +141,15 @@ router.post("/login", async (req, res) => {
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    console.log("this is NODE_ENV {", process.env.NODE_ENV);
 
     const token = generateToken(user);
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "Strict",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      //     secure: process.env.NODE_ENV === "production",
+      //    sameSite: "Strict",
+      secure: false,
       maxAge: 15 * 60 * 1000,
       //secure: false,
     });

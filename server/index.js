@@ -1,3 +1,15 @@
+/*
+import ddTraceModule from 'dd-trace';
+
+const ddTrace = ddTraceModule.default ?? ddTraceModule;
+
+ddTrace.init({
+  logInjection: true,
+  runtimeMetrics: true,
+  analytics: true,
+});
+*/
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
